@@ -51,6 +51,15 @@ class telegram_bot():
         self.api.send_file(chat_id, 'audio', path)
         return True
 
+    def send_video(self, chat_id, path):
+        """
+        :param chat_id:
+        :param path: video path
+        :return:
+        """
+        self.api.send_file(chat_id, 'video', path)
+        return True
+
     def get_id_name_text_date(self, updates):
         """
         :param updates:
@@ -105,3 +114,15 @@ class telegram_bot():
         path_audio = self.api.download_file(file_id, path,
                                             '{}.{}'.format(audio['title'], audio['mime_type'].split('/')[-1]))
         return (user_id, name, path_audio, date)
+
+    def get_id_name_video_date(self, updates, path):
+        """
+            download video file
+        :param updates:
+        :param path:
+        :return: (chat_id, name, video path, date)
+        """
+        user_id, name, video, date = self.api.get_id_name_content_date(updates, content_type='video')
+        file_id = video['file_id']
+        path_video = self.api.download_file(file_id, path)
+        return (user_id, name, path_video, date)

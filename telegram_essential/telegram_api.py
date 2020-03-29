@@ -1,8 +1,8 @@
 import os
+import shutil
 import urllib
 
 import my_utils.web.json_utils as ju
-import shutil
 import requests
 
 
@@ -144,5 +144,7 @@ class telegram_api(object):
             return 'document'
         elif 'audio' in message:
             return 'audio'
+        elif 'video' in message:
+            return 'video'
         else:
             return None
