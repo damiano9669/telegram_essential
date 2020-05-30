@@ -1,12 +1,12 @@
+import json
 import os
 import shutil
 import urllib
 
-import my_utils.web.json_utils as ju
 import requests
 
 
-class telegram_api(object):
+class API(object):
 
     def __init__(self, token):
         """
@@ -27,8 +27,7 @@ class telegram_api(object):
         :return:
         """
         url = urllib.parse.urljoin(self.url, 'getUpdates')
-        js = ju.get_json(url)
-        return js
+        return self.get_json(url)
 
     def get_last_update(self, updates):
         """
@@ -69,7 +68,7 @@ class telegram_api(object):
         first_name = chat['first_name']
         content = message[content_type]
         date = message['date']
-        return (chat_id, first_name, content, date)
+        return chat_id, first_name, content, date
 
     def send_file(self, chat_id, content_type, path):
         """
@@ -107,7 +106,7 @@ class telegram_api(object):
         :return: file path
         """
         url = urllib.parse.urljoin(self.url, 'getFile?file_id={}'.format(file_id))
-        js = ju.get_json(url)
+        js = self.get_json(url)
         path_file = js['result']['file_path']
         url = self.telegram_url + 'file' + self.bot_url
         url = urllib.parse.urljoin(url, path_file)
@@ -132,19 +131,16 @@ class telegram_api(object):
         :return:
         """
         result = self.get_last_update(updates)
-        message = result['message']
+        message_type = list(result['message'].keys())[4]
 
-        if 'text' in message:
-            return 'text'
-        elif 'photo' in message:
-            return 'photo'
-        elif 'voice' in message:
-            return 'voice'
-        elif 'document' in message:
-            return 'document'
-        elif 'audio' in message:
-            return 'audio'
-        elif 'video' in message:
-            return 'video'
-        else:
-            return None
+        return message_type
+
+    def get_json(self, url):
+        """
+            get json from telegram server
+        :param url: url
+        :return:
+        """
+        response = requests.post(url)
+        content = response.content.decode('utf8')
+        return json.loads(content)

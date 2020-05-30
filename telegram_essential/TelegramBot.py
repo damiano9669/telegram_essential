@@ -1,10 +1,10 @@
-from telegram_essential.telegram_api import telegram_api
+from telegram_essential.API import API
 
 
-class telegram_bot():
+class TelegramBot(API):
 
     def __init__(self, token):
-        self.api = telegram_api(token)
+        super().__init__(token=token)
 
     def send_text(self, chat_id, text):
         """
@@ -12,7 +12,7 @@ class telegram_bot():
         :param text: message to send
         :return:
         """
-        self.api.send_message(chat_id, text)
+        self.send_message(chat_id, text)
         return True
 
     def send_photo(self, chat_id, path):
@@ -21,7 +21,7 @@ class telegram_bot():
         :param path: photo path
         :return:
         """
-        self.api.send_file(chat_id, 'photo', path)
+        self.send_file(chat_id, 'photo', path)
         return True
 
     def send_voice_message(self, chat_id, path):
@@ -30,7 +30,7 @@ class telegram_bot():
         :param path: voice message path
         :return:
         """
-        self.api.send_file(chat_id, 'voice', path)
+        self.send_file(chat_id, 'voice', path)
         return True
 
     def send_document(self, chat_id, path):
@@ -39,7 +39,7 @@ class telegram_bot():
         :param path: document path
         :return:
         """
-        self.api.send_file(chat_id, 'document', path)
+        self.send_file(chat_id, 'document', path)
         return True
 
     def send_audio(self, chat_id, path):
@@ -48,7 +48,7 @@ class telegram_bot():
         :param path: audio path
         :return:
         """
-        self.api.send_file(chat_id, 'audio', path)
+        self.send_file(chat_id, 'audio', path)
         return True
 
     def send_video(self, chat_id, path):
@@ -57,7 +57,7 @@ class telegram_bot():
         :param path: video path
         :return:
         """
-        self.api.send_file(chat_id, 'video', path)
+        self.send_file(chat_id, 'video', path)
         return True
 
     def get_id_name_text_date(self, updates):
@@ -65,7 +65,7 @@ class telegram_bot():
         :param updates:
         :return: (chat_id, name, text, date)
         """
-        return self.api.get_id_name_content_date(updates, 'text')
+        return self.get_id_name_content_date(updates, 'text')
 
     def get_id_name_photo_date(self, updates, path, quality=2):
         """
@@ -74,10 +74,10 @@ class telegram_bot():
         :param quality: 0 (worst quality), 1 (bad quality), 2 (medium quality), 3 (best quality)
         :return: tuple (user_id, name, photo path, date)
         """
-        user_id, name, photos, date = self.api.get_id_name_content_date(updates, content_type='photo')
+        user_id, name, photos, date = self.get_id_name_content_date(updates, content_type='photo')
         file_id = photos[quality]['file_id']
-        path_photo = self.api.download_file(file_id, path)
-        return (user_id, name, path_photo, date)
+        path_photo = self.download_file(file_id, path)
+        return user_id, name, path_photo, date
 
     def get_id_name_voice_date(self, updates, path):
         """
@@ -85,10 +85,10 @@ class telegram_bot():
         :param path: directory path to save voice message
         :return: tuple (user_id, name, voice path, date)
         """
-        user_id, name, voice, date = self.api.get_id_name_content_date(updates, content_type='voice')
+        user_id, name, voice, date = self.get_id_name_content_date(updates, content_type='voice')
         file_id = voice['file_id']
-        path_voice = self.api.download_file(file_id, path)
-        return (user_id, name, path_voice, date)
+        path_voice = self.download_file(file_id, path)
+        return user_id, name, path_voice, date
 
     def get_id_name_document_date(self, updates, path):
         """
@@ -97,10 +97,10 @@ class telegram_bot():
         :param path:
         :return: (chat_id, name, document path, date)
         """
-        user_id, name, document, date = self.api.get_id_name_content_date(updates, content_type='document')
+        user_id, name, document, date = self.get_id_name_content_date(updates, content_type='document')
         file_id = document['file_id']
-        path_document = self.api.download_file(file_id, path, document['file_name'])
-        return (user_id, name, path_document, date)
+        path_document = self.download_file(file_id, path, document['file_name'])
+        return user_id, name, path_document, date
 
     def get_id_name_audio_date(self, updates, path):
         """
@@ -109,11 +109,11 @@ class telegram_bot():
         :param path:
         :return: (chat_id, name, audio path, date)
         """
-        user_id, name, audio, date = self.api.get_id_name_content_date(updates, content_type='audio')
+        user_id, name, audio, date = self.get_id_name_content_date(updates, content_type='audio')
         file_id = audio['file_id']
-        path_audio = self.api.download_file(file_id, path,
-                                            '{}.{}'.format(audio['title'], audio['mime_type'].split('/')[-1]))
-        return (user_id, name, path_audio, date)
+        path_audio = self.download_file(file_id, path,
+                                        '{}.{}'.format(audio['title'], audio['mime_type'].split('/')[-1]))
+        return user_id, name, path_audio, date
 
     def get_id_name_video_date(self, updates, path):
         """
@@ -122,7 +122,7 @@ class telegram_bot():
         :param path:
         :return: (chat_id, name, video path, date)
         """
-        user_id, name, video, date = self.api.get_id_name_content_date(updates, content_type='video')
+        user_id, name, video, date = self.get_id_name_content_date(updates, content_type='video')
         file_id = video['file_id']
-        path_video = self.api.download_file(file_id, path)
-        return (user_id, name, path_video, date)
+        path_video = self.download_file(file_id, path)
+        return user_id, name, path_video, date
